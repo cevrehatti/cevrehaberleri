@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Çevrenin Dünyası</title>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital@1&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'PT Serif', serif; padding: 40px; background: #fafafa; color: #222; }
+    h1 { text-align: center; font-style: italic; }
+    .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1000px; margin: 40px auto; }
+    .grid-item { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    .grid-item img { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: 15px; border-radius: 4px; }
+    .grid-item h3 { margin: 0 0 10px; font-size: 18px; }
+    .grid-item p { font-size: 14px; color: #555; }
+  </style>
+</head>
+<body>
+  <h1>Çevrenin Dünyası</h1>
+  <div id="rss-grid" class="grid-container"></div>
+
+  <script>
+    const sources = [
+      { name: "BBC", domain: "bbc.co.uk", rssUrl: "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
+      { name: "The Guardian", domain: "theguardian.com", rssUrl: "https://www.theguardian.com/environment/rss" }
+    ];
+
+    const container = document.getElementById("rss-grid");
+
+    sources.forEach(source => {
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.rssUrl)}`;
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const item = data.items && data.items[0];
+          if (!item) return;
+          const div = document.createElement("div");
+          div.className = "grid-item";
+          div.innerHTML = `
+            <img src="${item.thumbnail || 'https://via.placeholder.com/400x200?text=Görsel+Yok'}" alt="${source.name}">
+            <h3>${source.name}</h3>
+            <p>${item.title}</p>
+          `;
+          container.appendChild(div);
+        })
+        .catch(error => {
+          console.error("Hata:", error);
+        });
+    });
+  </script>
+</body>
+</html>
